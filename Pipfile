@@ -1,0 +1,22 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+jupyter = "*"
+scrapy-gui = "*"
+ipython = "*"
+pbr = "*"
+
+[packages]
+bibtexparser = "*"
+pylatexenc = "*"
+slrtool = {editable = true,path = "."}
+pandas = "*"
+scholarly = "*"
+scrapy = "*"
+requests = "*"
+
+[requires]
+python_version = "3.8"
