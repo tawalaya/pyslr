@@ -4,6 +4,7 @@ import logging
 
 if __name__ == "__main__":
     import sys
+    print("pyslr")
     logging.basicConfig(level=logging.DEBUG)
 
     args = sys.argv[1:]
