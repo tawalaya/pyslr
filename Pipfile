@@ -12,7 +12,6 @@ pbr = "*"
 [packages]
 bibtexparser = "*"
 pylatexenc = "*"
-slrtool = {editable = true,path = "."}
 pandas = "*"
 scholarly = "*"
 scrapy = "*"

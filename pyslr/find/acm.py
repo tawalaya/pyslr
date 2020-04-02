@@ -8,11 +8,11 @@ import json
 import time
 
 
-class ACMSeachDOISpider(scrapy.Spider):
+class ACMSearchDOISpiderr(scrapy.Spider):
     name="ACM-Serach-Spider"
     results_per_page=50
     def __init__(self, after_year=2015,query=None,results=[], *args, **kwargs):
-        super(ACMSeachDOISpider, self).__init__(*args, **kwargs)
+        super(ACMSearchDOISpiderr, self).__init__(*args, **kwargs)
         q = {'AllField':query}
         allfields=urlencode(q).replace('%28','(').replace("%22","\"").replace("%29",")") 
         baseurl = 'https://dl.acm.org/action/doSearch?fillQuickSearch=false&expand=dl&AfterYear={}&{}++'
@@ -37,7 +37,7 @@ class ACMSeachDOISpider(scrapy.Spider):
 
 
 
-class ACMSerach(Finder):
+class ACMSearch(Finder):
     def name(self):
         return "ACM"
 
@@ -141,7 +141,7 @@ class ACMSerach(Finder):
 
         results=[]
 
-        process.crawl(ACMSeachDOISpider,query=query,results=results,name=name)
+        process.crawl(ACMSearchDOISpiderr,query=query,results=results,name=name)
         process.start()
         return results
     
