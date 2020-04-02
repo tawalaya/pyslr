@@ -105,7 +105,7 @@ class ACMSerach(Finder):
     def search_raw(self,query):
         search_name = "{}-{}".format(self.name(),hash(query)%10**8)
         
-        results = self._searchDoisUsingSpyder(query)
+        results = self._searchDoisUsingSpyder(query,search_name)
 
         print("using {} we collected  {} dois, getting detailed information now...".format(query,len(results)))
         
@@ -134,14 +134,14 @@ class ACMSerach(Finder):
         with open(filename,mode) as f:
             f.write("\n".join(results))
 
-    def _searchDoisUsingSpyder(self, query):
+    def _searchDoisUsingSpyder(self, query,name=""):
         process = CrawlerProcess()
         process.settings.set('DOWNLOAD_DELAY',  5, priority='cmdline')
         process.settings.set('COOKIES_DEBUG',  True, priority='cmdline')
 
         results=[]
 
-        process.crawl(ACMSeachDOISpider,query=query,results=results)
+        process.crawl(ACMSeachDOISpider,query=query,results=results,name=name)
         process.start()
         return results
     
