@@ -19,7 +19,7 @@ class IEEESearch(Finder):
     def search(self,keywords=[]):
         query = []
         for keyword in keywords:
-            query.append("Abstract:({})".format(keyword))
+            query.append("\"All Metadata\":\"{}\"".format(keyword))
         query=" OR ".join(query)
         return self.search_raw(query)
 
