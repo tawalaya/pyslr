@@ -19,15 +19,15 @@ class IEEESearch(Finder):
     def search(self,keywords=[]):
         query = []
         for keyword in keywords:
-            query.append("\"All Metadata\":\"{}\"".format(keyword))
-        query=" OR ".join(query)
+            query.append(r'(All Metadata":"{}")'.format(keyword))
+        query=r" OR ".join(query)
         return self.search_raw(query)
 
 
     def search_raw(self,query,start=2015,end=None):
         search_name = "{}-{}".format(self.name(),hash(query)%10**8)
  
-        records = list(self._extract(query,start,end,search_name))
+        records = list(self._extract(query,search_name,start,end))
 
         print("using {} we collected  {} dois, getting detailed information now...".format(query,len(records)))
 
@@ -37,14 +37,20 @@ class IEEESearch(Finder):
         startPage=1
         totalPages = None
         while totalPages is None or startPage < totalPages:
-            action,header = self._assembleRequestAction(query)
-            x = requests.post('https://ieeexplore.ieee.org/rest/search',json=action,headers=header,page=startPage,startYear=start,endYear=end)
+            action,header = self._assembleRequestAction(query,page=startPage,startYear=start,endYear=end)
+            print(action,header)
+            x = requests.post('https://ieeexplore.ieee.org/rest/search',json=action,headers=header)
             print("looking up page {}/{}".format(startPage,totalPages))
             if x.status_code == 200:
                 resp = x.json()
 
                 totalPages = resp['totalPages'] 
-
+                if 'records' not in resp:
+                    print("no content {} {}".format(x.status_code,x.content))
+                    break
+                else:
+                    print(resp)
+                
                 for r in resp['records']:
                     yield self._convert(r,search_name)
             else:
@@ -54,11 +60,11 @@ class IEEESearch(Finder):
             time.sleep(self.backoff_time)
             startPage+=1
 
-    def _assembleRequestAction(self,query,page=1,endYear=None,startYear=2015):
+    def _assembleRequestAction(self,query,page=1,startYear=2015,endYear=None):
         if not query:
             raise ValueError("query missing!")
 
-        if not endYear:
+        if endYear is None:
             endYear = datetime.now().year
         
         action = {
@@ -82,62 +88,67 @@ class IEEESearch(Finder):
         return action, header
 
     def _authors(self,r):
-        return list(map(lambda x:(x['lastName'],x['firstName']),r['authors'])) 
+        return list(map(lambda x:(x['lastName'],x['firstName']),gd(r,'authors',""))) 
 
     def _convert(self,r,search_name):
-        if r['isConference']:
-            Publication.fromPaper(
+        if gd(r,'isConference',False):
+            return Publication.Paper(
                 peer_reviewed=True,
-                publisher=r['publisher'],
+                publisher=gd(r,'publisher',""),
                 source=search_name,
-                title=r['articleTitle'],
-                year=r['publicationYear'],
+                title=gd(r,'articleTitle',""),
+                year=gd(r,'publicationYear',""),
                 authors=self._authors(r),
                 country="",
-                book_title=r['publicationTitle'],
-                series=r[''],
-                num_pages=r['endPage']-r['startPage'],
-                doi=r['doi'],
+                book_title=gd(r,'publicationTitle',""),
+                series="",
+                num_pages=int(gd(r,'endPage',"0"))-int(gd(r,'startPage',"0")),
+                doi=gd(r,'doi',""),
                 keywords=[],
-                abstract=r['abstract'],
+                abstract=gd(r,'abstract',""),
                 tried=None,
                 references=None
             )
-        elif r['isJournal'] or r['isJournalAndMagazine']:
-            Publication.fromJournal(
+        elif gd(r,'isJournal',False) or gd(r,'isJournalAndMagazine',False):
+            return Publication.Journal(
                 peer_reviewed=True,
-                publisher=r['publisher'],
+                publisher=gd(r,'publisher',""),
                 source=search_name,
-                title=r['articleTitle'],
-                year=r['publicationYear'],
+                title=gd(r,'articleTitle',""),
+                year=gd(r,'publicationYear',""),
                 authors=self._authors(r),
                 country="",
                 journal_name=r["publicationTitle"],
-                volume=r['volume'],
-                num_pages=r['endPage']-r['startPage'],
-                doi=r['doi'],
+                volume=gd(r,'volume',""),
+                num_pages=int(gd(r,'endPage',"0"))-int(gd(r,'startPage',"0")),
+                doi=gd(r,'doi',""),
                 keywords=[],
-                abstract=r['abstract'],
+                abstract=gd(r,'abstract',""),
                 tried=None,
                 references=None
             )
-        elif r['isBook']:
-            Publication.fromBook(
+        elif gd(r,'isBook',False):
+            return Publication.Book(
                 peer_reviewed=True,
-                publisher=r['publisher'],
+                publisher=gd(r,'publisher',""),
                 source=search_name,
-                title=r['articleTitle'],
-                year=r['publicationYear'],
+                title=gd(r,'articleTitle',""),
+                year=gd(r,'publicationYear',""),
                 authors=self._authors(r),
                 num_pages=None,
                 isbn=None,
-                doi='https://ieeexplore.ieee.org/%s'%r['puplicationLink'],
+                doi='https://ieeexplore.ieee.org/%s'%gd(r,'puplicationLink',""),
                 references=None,
                 tried=None
             )
         else:
-            print("failed to process %s"%r['doi'])
+            print("failed to process %s"%gd(r,'doi',""))
             with open('failed_bibs.txt',"w+") as f:
                 json.dump(r,f)
+            return None
         
-        
+def gd(dir,key,default):
+    if key in dir:
+        return dir[key]
+    else:
+        return default
