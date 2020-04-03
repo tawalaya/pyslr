@@ -72,7 +72,8 @@ class ACMSearch(Finder):
     def _convertACMDetails(self,items,search_name="DEBUG"):
         converter = {
             'ARTICLE_JOURNAL':self._asJournal, 
-            'PAPER_CONFERENCE':self._asPaper
+            'PAPER_CONFERENCE':self._asPaper,
+            'ARTICLE':self._asJournal,
         }
 
         search_results = []
