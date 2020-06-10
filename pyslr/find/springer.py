@@ -116,4 +116,4 @@ class SpringerLinkSearch(Finder):
 
 
     def extractAuthros(self,authors):
-        return list(map(lambda x:x["creator"].split(","),record["creators"])) 
+        return list(map(lambda x:x["creator"].split(","),authors["creators"])) 
