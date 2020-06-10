@@ -3,3 +3,5 @@ from .find import Finder
 from .acm import ACMSearch
 from .ieee import IEEESearch
 from .search import Search
+from .sciencedirect import ScienceDirectSearch
+from .springer import SpringerLinkSearch

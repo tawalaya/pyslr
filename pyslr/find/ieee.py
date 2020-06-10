@@ -1,6 +1,6 @@
 from urllib.parse import urlencode
 from pyslr.find import Finder
-from pyslr.common import Publication
+from pyslr.common import Publication,Expression
 from datetime import datetime
 import requests
 import json
@@ -16,10 +16,13 @@ class IEEESearch(Finder):
     def name(self):
         return "IEEE"
 
+    def search_expression(self,experssion):
+        return self.search_raw(str(experssion.withTemplate('(All Metadata":"{}")')))
+
     def search(self,keywords=[]):
         query = []
         for keyword in keywords:
-            query.append(r'(All Metadata":"{}")'.format(keyword))
+            query.append(r'("All Metadata":"{}")'.format(keyword))
         query=r" OR ".join(query)
         return self.search_raw(query)
 

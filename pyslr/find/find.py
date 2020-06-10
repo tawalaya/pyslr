@@ -8,6 +8,9 @@ class Finder(metaclass=ABCMeta):
     def name(self,): raise NotImplementedError
 
     @abstractmethod
+    def search_expression(self,experssion=None): raise NotImplementedError
+
+    @abstractmethod
     def search(self,keywords=[]): raise NotImplementedError
 
     @abstractmethod

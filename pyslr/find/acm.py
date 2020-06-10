@@ -2,7 +2,7 @@ import scrapy
 from urllib.parse import urlencode
 from scrapy.crawler import CrawlerProcess
 from pyslr.find import Finder
-from pyslr.common import Publication
+from pyslr.common import Publication,Expression
 import requests
 import json
 import time
@@ -47,6 +47,9 @@ class ACMSearch(Finder):
             dois = list(map(lambda x:x.strip(),f.readlines()))
         
         self._fromDoiToInternal(dois,search_name="FROM_DOIS")
+
+        def search_expression(self,experssion):
+            return self.search_raw(str(experssion.withTemplate("Abstract:({})")))
 
     def search(self,keywords=[]):
         query = []
