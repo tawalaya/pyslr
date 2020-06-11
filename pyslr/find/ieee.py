@@ -17,7 +17,7 @@ class IEEESearch(Finder):
         return "IEEE"
 
     def search_expression(self,experssion):
-        return self.search_raw(str(experssion.withTemplate('(All Metadata":"{}")')))
+        return self.search_raw(str(experssion.withTemplate('("All Metadata":"{}")',False)))
 
     def search(self,keywords=[]):
         query = []

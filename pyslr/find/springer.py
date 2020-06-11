@@ -42,7 +42,7 @@ class SpringerLinkSearch(Finder):
             params={
                 "q":query,
                 "api_key":self.api_key,
-                "p":100,
+                "p":20,
                 "s":offset
             }
             print("fetching",offset)
@@ -50,7 +50,7 @@ class SpringerLinkSearch(Finder):
             resp = session.get("http://api.springernature.com/meta/v2/json",params=params)
             if resp.status_code > 200:
                 #TODO: error !!
-                print("failed to fetch ...")
+                print("failed to fetch ...",resp.content)
                 
             else:
                 result = resp.json()
@@ -116,4 +116,4 @@ class SpringerLinkSearch(Finder):
 
 
     def extractAuthros(self,authors):
-        return list(map(lambda x:x["creator"].split(","),authors["creators"])) 
+        return list(map(lambda x:x["creator"].split(","),authors)) 

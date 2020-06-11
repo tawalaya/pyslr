@@ -1,4 +1,4 @@
-from pyslr.find import Finder
+from pyslr.find import Finder,crossref
 from pyslr.common import Publication,Expression
 from datetime import datetime
 import requests
@@ -97,6 +97,12 @@ class ScienceDirectSearch(Finder):
                         num_pages=pages,
                         doi=entry["prism:doi"],
                     ))
+                elif "prism:doi" in entry:
+                    ref = crossref(entry["prism:doi"])
+                    if ref is not None:
+                        results.append(ref)
+                    else:
+                        failed.append(failed.append(entry))
                 else:
                     failed.append(failed.append(entry))
             except Exception:

@@ -8,7 +8,7 @@ class Expression(object):
         elems = []
         for elem in self.elements:
             if type(elem) == Expression:
-                elems.append(elem.withTemplate(template))
+                elems.append(elem.withTemplate(template,escape))
             else:
                 elems.append(template.format(elem))
         return Expression(self.operation,elems,escape)

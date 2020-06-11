@@ -48,8 +48,8 @@ class ACMSearch(Finder):
         
         self._fromDoiToInternal(dois,search_name="FROM_DOIS")
 
-        def search_expression(self,experssion):
-            return self.search_raw(str(experssion.withTemplate("Abstract:({})")))
+    def search_expression(self,experssion):
+        return self.search_raw(str(experssion.withTemplate("Abstract:(\"{}\")",False)))
 
     def search(self,keywords=[]):
         query = []

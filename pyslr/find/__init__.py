@@ -5,3 +5,4 @@ from .ieee import IEEESearch
 from .search import Search
 from .sciencedirect import ScienceDirectSearch
 from .springer import SpringerLinkSearch
+from .crossref import crossref
